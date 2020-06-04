@@ -14,39 +14,39 @@
 6 * 7
 
 ## Add 4 to 6 and divide the result by 2
-___
+(4 + 6) / 2
 
 ## Compute 5 modulo 2
-___
+5 % 2
 
 ## Assign the value 82 to the variable x
 ## Print x
-x <- ___
+x <- 82
 x
 
 ## Assign the value 41 to the variable y
 ## Print y
-y <- ___
-___
+y <- 41
+y
 
 ## Assign the output of x + y to the variable z
 ## Print z
-z <- ___
-___
+z <- x + y
+z
 
 ## Assign the string value "DSC520" to the variable class_name
 ## Print the value of class_name
-class_name <- ___
+class_name <- "DSC520"
 
 ## Assign the string value of TRUE to the variable is_good
 ## Print the value of is_good
-is_good <- ___
+is_good <- "TRUE"
 
 ## Check the class of the variable is_good using the `class()` function
-___
+class(is_good)
 
 ## Check the class of the variable z using the `class()` function
-___
+class(z)
 
 ## Check the class of the variable class_name using the class() function
-___
+class(class_name)
