@@ -53,10 +53,12 @@ names(week2_sleep) <- days
 week1_sleep[__]
 
 ## Create vector called weekdays from the days vector
-weekdays <- days[__:__]
+weekdays <- days[2:6]
+weekdays
 
 ## Create vector called weekends containing Sunday and Saturday
-weekends <- ___
+weekends <- days[1,7]
+weekends
 
 ## Calculate the mean about sleep on weekdays for each week
 ## Assign the values to weekdays1_mean and weekdays2_mean
