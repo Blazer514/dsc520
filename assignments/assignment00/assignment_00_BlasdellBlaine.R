@@ -5,13 +5,13 @@
 # Basics
 
 ## Add 8 and 5
-___
+8 + 5
 
 ## Subtract 6 from 22
-___
+22 - 6
 
 ## Multiply 6 by 7
-___
+6 * 7
 
 ## Add 4 to 6 and divide the result by 2
 ___
