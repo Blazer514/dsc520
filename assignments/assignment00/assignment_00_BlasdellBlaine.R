@@ -17,7 +17,7 @@
 (4 + 6) / 2
 
 ## Compute 5 modulo 2
-5 % 2
+5 %% 2
 
 ## Assign the value 82 to the variable x
 ## Print x
