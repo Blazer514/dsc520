@@ -6,18 +6,20 @@
 ## Assign the value to a variable named `num_vector`
 ## Print the vector
 num_vector <- c(3, 2, 1)
+num_vector
 
 ## Create a character vector with the values of "three", "two", "one" "using the `c()` function
 ## Assign the value to a variable named `char_vector`
 ## Print the vector
 char_vector <- c("three", "two", "one")
+char_vector
 
 ## Create a vector called `week1_sleep` representing how many hours slept each night of the week
 ## Use the values 6.1, 8.8, 7.7, 6.4, 6.2, 6.9, 6.6
 week1_sleep <- c(6.1, 8.8, 7.7, 6.4, 6.2, 6.9, 6.6)
 
 ## Display the amount of sleep on Tuesday of week 1 by selecting the variable index
-week1_sleep[2]
+week1_sleep[3]
 
 ## Create a vector called `week1_sleep_weekdays`
 ## Assign the weekday values using indice slicing
@@ -86,9 +88,10 @@ student04 <- c(95.2, 94.1)
 grades <- rbind(student04,grades)
 grades
 
+
 ## Add a new assignment column with `cbind()`
-assignment04 <- c(92.1, 84.3, 75.1, 97.8)
-grades <- cbind(assignment04,grades)
+assignment03 <- c(92.1, 84.3, 75.1, 97.8)
+grades <- cbind(assignment03,grades)
 grades
 
 ## Add the following names to columns and rows using `rownames()` and `colnames()`
