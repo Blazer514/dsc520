@@ -1,0 +1,131 @@
+---
+title: "ASSIGNMENT 4"
+author: "Blaine Blasdell"
+date: '2020-06-16'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+bibliography: bibliography.bib
+---
+library(rmarkdown)
+library(tinytex)
+library(pandoc)
+
+# Markdown Basics
+
+## Favorite Foods
+1. Dairy Queen Blizzard
+1. Coffee
+1. Chicken Wings
+
+## Images
+![All Cases (Log Plot)](plots/10-all-cases-log.png)
+
+
+## Add a Quote
+
+> Yoda said:
+> "Do or do not. 
+> There is no try."
+
+## Add an Equation
+$$ pie = (4/1) - (4/3) + (4/5) - (4/7) + (4/9) - (4/11) + (4/13) - (4/15) ... $$
+
+## Add a Footnote
+Yoda: Star Wars. Empire Strikes Back (1980)^[1]:
+
+
+## Add Citations
+* " When I was 8 years old, my parents bought me a guitar for Christmas. Even then, I’d desperately wanted to play the guitar for years." [@field2012discovering]
+
+* R for Everyone [@lander2014r]
+
+# Inline Code
+```{r, include=FALSE}
+## Load the ggplot2 package
+library(ggplot2)
+theme_set(theme_minimal())
+
+## Load the `data/r4ds/heights.csv` to
+heights_df <- read.csv("data/r4ds/heights.csv")
+
+## Load the file `"data/nytimes/covid-19-data/us-states.csv"` and
+## assign it to the `covid_df` dataframe
+covid_df <- read.csv("data/nytimes/covid-19-data/us-states.csv")
+
+## Parse the date column using `as.Date()``
+covid_df$date <- as.Date(covid_df$date)
+
+## Create three dataframes named `california_df`, `ny_df`, and `florida_df`
+## containing the data from California, New York, and Florida
+california_df <- covid_df[ which( covid_df$state == "California"), ]
+ny_df <- covid_df[ which( covid_df$state == "New York"),]
+florida_df <- covid_df[ which( covid_df$state == "Florida"),]
+```
+
+
+## NY Times COVID-19 Data
+```{r, echo=FALSE}
+## Scale the y axis using `scale_y_log10()`
+ggplot(data=florida_df, aes(x=date, group=1)) +
+  geom_line(aes(y = cases, colour = "Florida")) +
+  geom_line(data=ny_df, aes(y = cases,colour="New York")) +
+  geom_line(data=california_df, aes(y = cases, colour="California")) +
+  scale_colour_manual("",
+                      breaks = c("Florida","New York", "California"),
+                      values = c("darkred","darkgreen","steelblue")) +
+  xlab(" ") + ylab("Cases") + scale_y_log10()
+```
+
+
+## R4DS Height vs Earnings
+```{r, echo=FALSE}
+theme_set(theme_minimal())
+
+## Verified my working directory is set up with getwd() 
+## setwd("/home/jdoe/Workspaces/dsc520")'
+
+
+## Load the `data/r4ds/heights.csv` to
+heights_df <- read.csv("data/r4ds/heights.csv")
+
+
+## Using `ggtitle()`, `xlab()`, and `ylab()` to add a title, x label, and y label to the previous plot
+## Title: Height vs. Earnings
+## X label: Height (Inches)
+## Y Label: Earnings (Dollars)
+ggplot(heights_df, aes(x=height, y=earn, col=sex)) + geom_point() + ggtitle('Height vs. Earnings') + xlab('Height (Inches)') + ylab('Earnings (Dollars)') 
+
+```
+
+# Tables
+```{r, echo=FALSE,include=FALSE}
+## Create a dataframe called characters_df using the following information from LOTR
+name <- c("Aragon", "Bilbo", "Frodo", "Galadriel", "Sam", "Gandalf", "Legolas", "Sauron", "Gollum")
+race <- c("Men", "Hobbit", "Hobbit", "Elf", "Hobbit", "Maia", "Elf", "Maia", "Hobbit")
+in_fellowship <- c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE)
+ring_bearer <- c(FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE)
+age <- c(88, 129, 51, 7000, 36, 2019, 2931, 7052, 589)
+
+characters_df <- data.frame(name,race,in_fellowship,ring_bearer,age)
+
+```
+
+## Knitr Table with Kable
+```{r, echo=FALSE}
+library(pander)
+library(knitr)
+knitr::kable(characters_df[c(1:9), 1:5], caption = "One Ring to Rule them all", col.names = c("Name","Race","In Fellowship","Ring Bearer","Age"))
+```
+
+
+## Pandoc Table
+
+```{r, echo=FALSE}
+library(pander)
+library(knitr)
+pandoc.table(characters_df[c(1:3,5,8), 1:5], style="grid", caption = "One Ring to Rule them all", col=c("Name","Race","In Fellowship","Ring Bearer","Age"))
+```
+
+# References

@@ -1,0 +1,22 @@
+---
+title: "ASSIGNMENT 4.1"
+author: "Blaine Blasdell"
+date: '2020-06-28'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+bibliography: bibliography.bib
+---
+library(rmarkdown)
+library(tinytex)
+library(pandoc)
+library(boot)
+library(ggm)
+library(ggplot2)
+library(Hmisc)
+library(polycor)
+-----------------------------
+
+
+# References
