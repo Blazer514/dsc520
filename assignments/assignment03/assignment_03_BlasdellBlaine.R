@@ -18,21 +18,21 @@ heights_df <- read.csv("data/r4ds/heights.csv")
 ## `height` vs. `earn`
 ggplot(heights_df, aes(x=height, y=earn)) + geom_point()
 ## `age` vs. `earn`
-ggplot(heights_df, aes(x=heights_df$age, y=heights_df$earn)) + geom_point()
+ggplot(heights_df, aes(x=age, y=earn)) + geom_point()
 ## `ed` vs. `earn`
-ggplot(heights_df, aes(x=heights_df$ed, y=heights_df$earn)) + geom_point()
+ggplot(heights_df, aes(x=ed, y=earn)) + geom_point()
 
 ## Re-create the three scatterplots and add a regression trend line using
 ## the `geom_smooth()` function
 ## `height` vs. `earn`
-ggplot(heights_df, aes(x=heights_df$height, y=heights_df$earn)) + geom_point() + geom_smooth()
+ggplot(heights_df, aes(x=height, y=earn)) + geom_point() + geom_smooth()
 ## `age` vs. `earn`
-ggplot(heights_df, aes(x=heights_df$age, y=heights_df$earn)) + geom_point() + geom_smooth()
+ggplot(heights_df, aes(x=age, y=earn)) + geom_point() + geom_smooth()
 ## `ed` vs. `earn`
-ggplot(heights_df, aes(x=heights_df$ed, y=heights_df$earn)) + geom_point() + geom_smooth()
+ggplot(heights_df, aes(x=ed, y=earn)) + geom_point() + geom_smooth()
 
 ## Create a scatterplot of `height`` vs. `earn`.  Use `sex` as the `col` (color) attribute
-ggplot(heights_df, aes(x=heights_df$height, y=heights_df$earn, col=sex)) + geom_point()
+ggplot(heights_df, aes(x=height, y=earn, col=sex)) + geom_point()
 
 ## Using `ggtitle()`, `xlab()`, and `ylab()` to add a title, x label, and y label to the previous plot
 ## Title: Height vs. Earnings
@@ -42,12 +42,12 @@ ggplot(heights_df, aes(x=height, y=earn, col=sex)) + geom_point() + ggtitle('Hei
 
 # https://ggplot2.tidyverse.org/reference/geom_histogram.html
 ## Create a histogram of the `earn` variable using `geom_histogram()`
-ggplot(___, aes(___)) + ___
+ggplot(heights_df, aes(earn)) + geom_histogram()
 
 ## Create a histogram of the `earn` variable using `geom_histogram()`
 ## Use 10 bins
-ggplot(___ aes(___)) + ___
+ggplot(heights_df, aes(earn)) + geom_histogram(bins=10)
 
 # https://ggplot2.tidyverse.org/reference/geom_density.html
 ## Create a kernel density plot of `earn` using `geom_density()`
-ggplot(___, aes(___)) +  ___
+ggplot(heights_df, aes(earn)) +  geom_density()

@@ -69,15 +69,14 @@ florida_df <- covid_df[ which( covid_df$state == "Florida"),]
 ```{r, echo=FALSE}
 ## Scale the y axis using `scale_y_log10()`
 ggplot(data=florida_df, aes(x=date, group=1)) +
-    geom_line(aes(y = cases, colour = "Florida")) +
-    geom_line(data=ny_df, aes(y = cases,colour="New York")) +
-    geom_line(data=california_df, aes(y = cases, colour="California")) +
-    scale_colour_manual("",
-                    breaks = c("Florida","New York", "California"),
-                    values = c("darkred","darkgreen","steelblue")) +
-    xlab(" ") + ylab("Cases") + scale_y_log10()
+  geom_line(aes(y = cases, colour = "Florida")) +
+  geom_line(data=ny_df, aes(y = cases,colour="New York")) +
+  geom_line(data=california_df, aes(y = cases, colour="California")) +
+  scale_colour_manual("",
+                      breaks = c("Florida","New York", "California"),
+                      values = c("darkred","darkgreen","steelblue")) +
+  xlab(" ") + ylab("Cases") + scale_y_log10()
 ```
-
 
 
 ## R4DS Height vs Earnings
