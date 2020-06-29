@@ -3,7 +3,7 @@
 # Date: 2020-06-28
 
 ## Set the working directory to the root of your DSC 520 directory
-## ("/home/jdoe/Workspaces/dsc520")
+setwd("D:/Blaine Documents/Bellevue/DSC520/dsc520/Weekly and Projects/data")
 
 ## Load the `data/r4ds/heights.csv` to
 heights_df <- read.csv("data/r4ds/heights.csv")

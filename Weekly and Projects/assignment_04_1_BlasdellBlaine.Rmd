@@ -3,20 +3,187 @@ title: "ASSIGNMENT 4.1"
 author: "Blaine Blasdell"
 date: '2020-06-28'
 output:
-  pdf_document: default
   word_document: default
+  pdf_document: default
   html_document: default
 bibliography: bibliography.bib
 ---
+
+<!-- ## Library Calls -->
+```{r, include=FALSE}
 library(rmarkdown)
 library(tinytex)
-library(pandoc)
 library(boot)
 library(ggm)
 library(ggplot2)
 library(Hmisc)
 library(polycor)
+library(Rcmdr)
+```
 -----------------------------
+# Assignment 4.1
 
+
+```{r, echo=FALSE}
+# Read the file student-survey
+setwd("D:/Blaine Documents/Bellevue/DSC520/dsc520/Weekly and Projects/data")
+student_df <- read.csv("student-survey.csv", header = TRUE)
+```
+
+## Question 4.1a
+Use R to calculate the covariance of the Survey variables and provide 
+an explanation of why you would use this calculation and what the results indicate.
+```{r, echo=FALSE,include=FALSE}
+# Covariance of time reading to time watching TV
+read_tv <- cor(student_df$TimeReading,student_df$TimeTV)
+
+# Covariance of time reading to Happiness
+read_hap <-cor(student_df$TimeReading,student_df$Happiness)
+
+## Covariance of time reading to gender
+read_gen <- cor(student_df$TimeReading,student_df$Gender)
+
+## Covariance of time tv watching to happiness
+tv_hap <- cor(student_df$TimeTV,student_df$Happiness)
+
+## Covariance of time tv watching to Gender
+tv_gen <- cor(student_df$TimeTV,student_df$Gender)
+
+## Covariance of Happiness to Gender
+hap_gen <- cor(student_df$Happiness,student_df$Gender)
+
+## Covaruance of Time TV watching to Time reading in minutes
+readmin_tv <- cor(student_df$MinRead,student_df$TimeTV)
+```
+
+## A4.1a. Covariance tells us the combined deviation from the mean for the two variables.  
+This will tell us if the two variables have a relation.
+Reading and TV watching, reading and happiness, and reading and gender all have negative covariance meaning they have a negative relation.
+TV watching and happiness, TV watching and gender, and happiness and gender all have a positive covariance and positive relationship.
+At first look, reading and watching TV have a negative relationship, in that the more the student reads, the less likely they are to watch TV.
+<!-- Output Values -->
+```{r}
+read_tv
+read_hap
+read_gen
+tv_hap
+tv_gen
+hap_gen 
+
+```
+
+## Q4.1b. Examine the Survey data variables.   
+What measurement is being used for the variables? 
+Explain what effect changing the measurement being used for the variables would have on the covariance calculation. 
+Would this be a problem? Explain and provide a better alternative if needed.
+
+##A4.1b. Part 1 
+
+1. Variables - Measure  
+1. Time Reading - Hours  
+1. Time Watching TV - Minutes  
+1. Happiness - Percentage  
+1. Gender - Binary (0/1) for Male/Female  
+
+##A4.1b. Part 2   
+Covariance does not use a standard scale so changing the measurement would change the covariance and would give you different values.   
+Standardizing the values such as converting the time reading to minutes would give a better representation between time reading and watching TV.   
+The interesting thing is that I converted the reading time to minutes and the covariance did not change for the Reading verse time watching TV.
+A better option would be to use a correlation coffeicient instead of covariance, as it accounts for standardization.
+```{r}
+readmin_tv
+```
+
+## Q4.1c. Choose the type of correlation test to perform, explain why you chose this test, and make a prediction if the test yields a positive or negative correlation?
+
+##A4.1c.   
+I chose to use Kendall's tau as it is a very small sample size. I believe, which seems to make sense to me that this will be a negative correlation
+as I would guess, the more you watch TV the less you would read. 
+
+```{r, echo=FALSE}
+read_to_tv <- cor(student_df$MinRead, student_df$TimeTV, use = "complete.obs", method = "kendall" )
+
+```
+```{r}
+read_to_tv
+```
+As I predicted this is a negative correlation. Since the value is greater then .5, this is a strong correlation or relation.  
+
+## Q4.1d. Perform a correlation analysis of:
+
+## A4.1d. Part 1 - All Variables
+
+```{r, echo=FALSE}
+read_to_tv_all <- cor(student_df, use = "complete.obs", method = "pearson" )
+
+```
+```{r}
+read_to_tv_all
+```
+
+## A4.1d. Part 2 - A single correlation between two a pair of the variables
+```{r, echo=FALSE}
+read_to_tv <- cor(student_df$MinRead, student_df$TimeTV, use = "complete.obs", method = "pearson" )
+
+```
+```{r}
+read_to_tv
+```
+
+## A4.1d. Part 3 - Repeat your correlation test in step 2 but set the confidence interval at 99%
+```{r, echo=FALSE}
+read_to_tv_con <- cor.test(student_df$MinRead, student_df$TimeTV, alternative = "less", method = "pearson", conf.level = 0.99 )
+
+```
+```{r}
+read_to_tv_con
+```
+
+## A4.1d. Part 4 - Describe what the calculations in the correlation matrix suggest about the relationship between the variables. Be specific with your explanation.  
+
+The correlation Matrix suggests:
+
+1. There is a strong negative correlation between reading and watching television, meaning the more they watch television the more less likely they are to read.  
+1. Interestingly enough there a moderate negative relationship between reading and the students happiness.  
+1. There is an extremely weak negative correlation between time reading and the gender.  
+1. There is a strong positive correlation between watching television and the students happiness.  
+1. There is an extremely weak positive correlation between gender of the student and how much TV they watched.  
+1. There is an extremely weak positive relationship between gender of the student and how happy they were.  
+
+
+## A4.1e. Calculate the correlation coefficient and the coefficient of determination, describe what you conclude about the results..    
+```{r, echo=FALSE}
+read_to_tv_cor <- cor(student_df$MinRead, student_df$TimeTV)
+cor_mat_all <- cor(student_df)
+read_to_tv_coef <- (cor(student_df$MinRead, student_df$TimeTV))^2*100
+cor_mat_all_coef <- (cor(student_df))^2*100
+
+```
+```{r}
+read_to_tv_cor  
+read_to_tv_coef  
+cor_mat_all  
+cor_mat_all_coef
+```
+While there is a very strong negative correlation between reading and watching television; reading shares a 78% variability with watching television. So 22% of other factors could affect the relationship between reading and watching television.  
+
+## A4.1f. Based on your analysis can you say that watching more TV caused students to read less? Explain...   
+
+Based on this analysis, the students who watched television were less likely to read. And students who read more, were less likely to watch television. There is a negative relationship between the two variables based on the correlation. Based on the coefficient of determination there is only about 22% of variability in other factors, such as gender and happiness.
+
+
+## A4.1f. Pick three variables and perform a partial correlation, documenting which variable you are “controlling”. Explain how this changes your interpretation and explanation of the results. 
+```{r, echo=FALSE}
+pc <- pcor(c("Happiness","TimeReading","Gender"), var(student_df) )
+
+```
+```{r}
+pc
+pc^2*100
+pcor.test(pc,1,11)
+```
+I looked at a partial correlation between the students happiness and the amount of time reading with gender as a control. 
+There is a moderate negative partial relationship between the amount they read and how happy they were.
+Not including the control, 18.3% of the variance in students reading amount can account for their happiness.[@field2012discovering] 
 
 # References

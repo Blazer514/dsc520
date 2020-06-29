@@ -20,7 +20,7 @@ library(pandoc)
 1. Chicken Wings
 
 ## Images
-![All Cases (Log Plot)](plots/10-all-cases-log.png)
+<!-- ## ![All Cases (Log Plot)](plots/10-all-cases-log.png) -->
 
 
 ## Add a Quote
