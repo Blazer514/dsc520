@@ -1,0 +1,223 @@
+---
+title: "ASSIGNMENT 6.1"
+author: "Blaine Blasdell"
+date: '2020-07-09'
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+bibliography: bibliography.bib
+---
+
+<!-- ## Library Calls -->
+```{r, include=FALSE}
+library(rmarkdown)
+library(tinytex)
+library(boot)
+library(ggm)
+library(ggplot2)
+library(Hmisc)
+library(polycor)
+library(Rcmdr)
+library(readxl)
+library(QuantPsyc)
+```
+-----------------------------
+# Assignment 6.1
+
+
+```{r, echo=FALSE}
+# Read the file student-survey
+setwd("D:/Blaine Documents/Bellevue/DSC520/dsc520/Weekly and Projects/data")
+house_df <- read_excel("week-6-housing.xlsx")
+```
+
+## Question 6.1a
+Explain why you chose to remove data points from your ‘clean’ dataset.
+
+Answer - At this time the data looks fairly clean. There does appear to be missing data in City name but that field seems redundant with postal city.
+Once we have looked at the outliers and the model, additional data might be relevant to be cleaned.
+
+
+## Question 6.1b
+Create two variables; one that will contain the variables Sale Price and Square Foot of Lot (same variables used from previous assignment on simple regression) and one that will contain Sale Price and several additional predictors of your choice. Explain the basis for your additional predictor selections.
+
+Answer - see below: house_lm will contain sale price (as the outcome) and square feet of the lot ( as the predictor). house_multi_lm will contain addition predictors including the year it was built, total square feet of the living area, number of bedrooms and the two common number of bathrooms.
+```{r}
+house_lm <- lm(sale_price ~ sq_ft_lot, data = house_df )
+
+house_mult_lm <- lm(sale_price ~ sq_ft_lot + year_built + square_feet_total_living + bedrooms + bath_full_count + bath_half_count, data = house_df)
+```
+
+## Question 6.1c
+Execute a summary() function on two variables defined in the previous step to compare the model results. What are the R2 and Adjusted R2 statistics? Explain what these results tell you about the overall model. Did the inclusion of the additional predictors help explain any large variations found in Sale Price?
+
+Answer:
+house_lm: R2 = 0.01435 & Adjusted R2 = 0.01428
+house_multi_lm: R2 = 0.2208 & Adjusted R2 = 0.2204
+
+With the single predictor of the lot size, we know it is an extremely weak prediction. We also know that the predictor of lot size only can explain 1.44% of the vairance in sale price. The multi-predictors does a better job as the coefficient now shows a moderate prediction (vice weak). The inclusion of the additional predictors explains 22.1% of the variance in price, much better then 2%.
+
+```{r}
+summary(house_lm)
+
+summary(house_mult_lm)
+```
+
+## Question 6.1d
+Considering the parameters of the multiple regression model you have created. What are the standardized betas for each parameter and what do the values indicate?
+
+```{r}
+lm.beta(house_lm)
+
+lm.beta(house_mult_lm)
+```
+Answer: The standardized beta tells the degree of importance of the variable to the outcome. In the single linear model we see that the square foot of the lot has some importance (.1198) but not great. In the multiple regression model, the total living space clearly has the highest importance the next closest is the year it was built. These make sense to me. What is counter-intuitive is that the total number of bedrooms is a negative relation, although small (-0.0222), meaning the more bathrooms typically the less the price.
+
+
+## Question 6.1e
+Calculate the confidence intervals for the parameters in your model and explain what the results indicate.
+
+```{r}
+confint(house_lm)
+
+confint(house_mult_lm)
+```
+Answer: The square foot of the lot size and the total living space have the smallest confidence intervals (likely to be representative of the model) of my variables meaning they are the most significant when determining the price of house. The count of half bathrooms crosses zero so it is not a good representative. The number of bedrooms, number of full bathrooms, and the year built are all significant but less representative.
+
+## Question 6.1f
+Assess the improvement of the new model compared to your original model (simple regression model) by testing whether this change is significant by performing an analysis of variance.
+
+```{r}
+anova(house_lm, house_mult_lm)
+```
+Answer:In this case te Pr(>F) or the p-value associated with the F-Statistic is very small (2.2e-16) showing a significant improvement over the original model.
+
+## Question 6.1g
+Perform casewise diagnostics to identify outliers and/or influential cases, storing each function's output in a dataframe assigned to a unique variable name.
+
+
+```{r}
+house_df$residuals <- resid(house_mult_lm)
+house_df$standardized.residuals <- rstandard(house_mult_lm)
+house_df$studentized.residuals <- rstudent(house_mult_lm)
+house_df$cooks.distance <- cooks.distance(house_mult_lm)
+house_df$dfbeta <- dfbeta(house_mult_lm)
+house_df$dffit <- dffits(house_mult_lm)
+house_df$leverage <- hatvalues(house_mult_lm)
+house_df$covariance.ratios <- covratio(house_mult_lm)
+
+```
+
+## Question 6.1h
+Calculate the standardized residuals using the appropriate command, specifying those that are +-2, storing the results of large residuals in a variable you create.
+
+Answer: 2.6% of the cases have a large residual, less then the 5% expected.
+
+
+```{r, echo=FALSE}
+
+house_df$large.residual <- house_df$standardized.residuals > 2 | house_df$standardized.residuals < -2
+
+house_df$large.residual2 <- house_df$standardized.residuals > 2.5 | house_df$standardized.residuals < -2.5
+
+
+```
+
+## Question 6.1i
+Use the appropriate function to show the sum of large residuals.
+
+```{r, echo=FALSE}
+
+n <- 12865
+n
+num_stand_resid <- sum(house_df$large.residual)
+num_stand_resid
+per_stand_resid <- num_stand_resid / n * 100
+format( per_stand_resid, digits = 2)
+
+
+n <- 12865
+n
+num_stand_resid2 <- sum(house_df$large.residual2)
+num_stand_resid2
+per_stand_resid2 <- num_stand_resid2 / n * 100
+format( per_stand_resid2, digits = 2)
+
+```
+
+## Question 6.1j
+Which specific variables have large residuals (only cases that evaluate as TRUE)?
+
+Answer: About 334 have large residuals. See table below.
+
+```{r, echo=FALSE}
+house_df[house_df$large.residual, c("sq_ft_lot","year_built","square_feet_total_living","bedrooms","bath_full_count","bath_half_count")]
+
+```
+
+## Question 6.1k
+Investigate further by calculating the leverage, cooks distance, and covariance rations. Comment on all cases that are problematic.
+
+Answer: None of the cases that have a large residual have a Cook's distance greater then 1, meaning they do not have any undue influence on the model.
+Regarding, leverage, using the book's calculation for average leverage (.000544), of the 334 with large residual, I show 230 cases that are within two times the average and 264 cases that are within three times the average. That gives me 70 cases not within three times the average that could be problematic. Using the formula for upper and lower covariance values, I have 18 cases that do not fall outside the range and could be problematic.
+
+```{r}
+house_df[house_df$large.residual, c("cooks.distance", "leverage", "covariance.ratios")]
+write.table(house_df[house_df$large.residual, c("cooks.distance", "leverage", "covariance.ratios")])
+
+```
+
+## Question 6.1l
+Perform the necessary calculations to assess the assumption of independence and state if the condition is met or not.
+
+Answer: With a p-value near zero, we can reject the null hypothesis. As the value of DW Statistic is less then one, our condition is not met.
+
+```{r}
+durbinWatsonTest(house_mult_lm)
+
+```
+
+## Question 6.1m
+Perform the necessary calculations to assess the assumption of no multicollinearity and state if the condition is met or not.
+
+Answer: The largest VIF is no where near 10 (being below 10) and our tolerance is above 0.2. The average which shows some correlation but not enough to cause concern. Based on what I see, the multi-regression model so no multicollinearity.
+
+```{r}
+vif(house_mult_lm)
+1/vif(house_mult_lm)
+mean(vif(house_mult_lm))
+
+```
+
+## Question 6.1n
+Visually check the assumptions related to the residuals using the plot() and hist() functions. Summarize what each graph is informing you of and if any anomalies are present.
+
+Answer: My histogram of Studentized Residuals is fairly normal. In the fitted values against residuals, my graph is clustered along the line but does not closely resemble any of the examples that would violate, randomness, heteroscedasticity or linearity. In the middle of my plot on observed values verse theoretical values you can see that there is a section in the middle that does deviate from normality and a skew. If the data was cleaned and additonal outliers removed, it would most likely be closer to normal. Also, trying different variables and parameters may include additional findings.
+
+```{r}
+house_df$fitted <- house_mult_lm$fitted.values
+
+histogram <- ggplot(house_df, aes(studentized.residuals)) + geom_histogram(aes(y = ..density..), colour = "black", fill = "white") + labs(x = "Studentized Residual", y = "Density")
+
+histogram + stat_function(fun = dnorm, args = list(mean = mean(house_df$studentized.residuals, na.rm = TRUE), sd = sd(house_df$studentized.residuals, na.rm = TRUE)), colour = "red", size = 1)
+
+
+qqPlot.resid <- qplot(sample = house_df$studentized.residuals) + labs(x = "Theoretical Values", y = "Observed Values")
+qqPlot.resid
+
+
+
+scatter <- ggplot(house_df, aes(fitted, studentized.residuals))
+scatter + geom_point() + geom_smooth(method = "lm", colour = "Blue") + labs(x = "Fitted Values", y = "Studentized Residual")
+
+hist(house_df$studentized.residuals)
+
+```
+
+## Question 6.1o
+Overall, is this regression model unbiased? If an unbiased regression model, what does this tell us about the sample vs. the entire population model?
+
+Answer: There are clearly some outliers and influential cases in this model that may be skewing or at least, slightly deviating it from norm. The model does not violate randomness, heteroscedasticity, linearity, and is has no multicollinearity. Most likely with the removal of some of the outlier and influential cases this model would be failry unbiased and a good representation of the for the population.
+
+# References
