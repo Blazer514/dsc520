@@ -1,0 +1,71 @@
+---
+title: "ASSIGNMENT 7.1"
+author: "Blaine Blasdell"
+date: '2020-07-19'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+bibliography: bibliography.bib
+---
+
+<!-- ## Library Calls -->
+```{r, include=FALSE}
+library(rmarkdown)
+library(tinytex)
+library(boot)
+library(ggm)
+library(ggplot2)
+library(Hmisc)
+library(polycor)
+library(Rcmdr)
+library(readxl)
+library(QuantPsyc)
+library(foreign)
+```
+-----------------------------
+# Assignment 7.1
+
+Attribute Information:
+
+<!-- 1. DGN: Diagnosis - specific combination of ICD-10 codes for primary and secondary as well multiple tumours if any (DGN3,DGN2,DGN4,DGN6,DGN5,DGN8,DGN1) -->
+<!-- 2. PRE4: Forced vital capacity - FVC (numeric) -->
+<!-- 3. PRE5: Volume that has been exhaled at the end of the first second of forced expiration - FEV1 (numeric) -->
+<!-- 4. PRE6: Performance status - Zubrod scale (PRZ2,PRZ1,PRZ0) -->
+<!-- 5. PRE7: Pain before surgery (T,F) -->
+<!-- 6. PRE8: Haemoptysis before surgery (T,F) -->
+<!-- 7. PRE9: Dyspnoea before surgery (T,F) -->
+<!-- 8. PRE10: Cough before surgery (T,F) -->
+<!-- 9. PRE11: Weakness before surgery (T,F) -->
+<!-- 10. PRE14: T in clinical TNM - size of the original tumour, from OC11 (smallest) to OC14 (largest) (OC11,OC14,OC12,OC13) -->
+<!-- 11. PRE17: Type 2 DM - diabetes mellitus (T,F) -->
+<!-- 12. PRE19: MI up to 6 months (T,F) -->
+<!-- 13. PRE25: PAD - peripheral arterial diseases (T,F) -->
+<!-- 14. PRE30: Smoking (T,F) -->
+<!-- 15. PRE32: Asthma (T,F) -->
+<!-- 16. AGE: Age at surgery (numeric) -->
+<!-- 17. Risk1Y: 1 year survival period - (T)rue value if died (T,F) -->
+
+```{r, echo=FALSE}
+# Read the file student-survey
+setwd("D:/Blaine Documents/Bellevue/DSC520/dsc520/Weekly and Projects/data")
+thor_df <- read.arff("ThoraricSurgery.ARFF")
+
+```
+
+## Question 7.1a
+a. Fit a binary logistic regression model to the data set that predicts whether or not the patient survived for one year (the Risk1Y variable) after the surgery. Use the glm() function to perform the logistic regression. See Generalized Linear Models for an example. Include a summary using the summary() function in your results.
+
+Answer - 
+
+
+```{r, echo=FALSE}
+# Read the file student-survey
+thor_glm.1 <- glm(thor_df$Risk1Y ~ DGN, data = thor_df, family = binomial() )
+thor_glm.2 <- glm(thor_df$Risk1Y ~ DGN + PRE4 + PRE5 + PRE6 + PRE7 + PRE8 + PRE9 + PRE10 + PRE11 + PRE14 + PRE17 + PRE19 + PRE25 + PRE30 + PRE32 + AGE, data = thor_df, family = binomial() )
+
+summary(thor_glm.1)
+summary(thor_glm.2)
+
+```
+# References
