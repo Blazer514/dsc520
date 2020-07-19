@@ -81,7 +81,7 @@ Answer - PRE9 (Dyspnoea before surgery) with a value of True, PRE14 (size of the
 ## Question 7.1c
 c. To compute the accuracy of your model, use the dataset to predict the outcome variable. The percent of correct predictions is the accuracy of your model. What is the accuracy of your model?
 
-Answer - The accuracy of my initial model with all variables is 83.6 %. By playing with the model I took several less significant variables, and surprisingly including DGN and Age and I got my model to be 84.3% accurate.
+Answer - The accuracy of my initial model with all variables is 83.6 %. By playing with the model I took several less significant variables out, and surprisingly not including DGN and Age and I got my model to be 84.3% accurate.
 
 ```{r, echo=FALSE}
 
@@ -100,9 +100,9 @@ conf_max3
 
 # Accuracy
 # All Predictors
-(conf_max2[[1,1]] + conf_max2[[2,2]]) / sum(conf_max2)
+(conf_max2[[1,1]] + conf_max2[[2,2]]) / sum(conf_max2) * 100
 # Predictors removed
-(conf_max3[[1,1]] + conf_max3[[2,2]]) / sum(conf_max3)
+(conf_max3[[1,1]] + conf_max3[[2,2]]) / sum(conf_max3) * 100
 
 
 #

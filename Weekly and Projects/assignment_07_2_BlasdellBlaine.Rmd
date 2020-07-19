@@ -1,0 +1,115 @@
+---
+title: "ASSIGNMENT 7.2"
+author: "Blaine Blasdell"
+date: '2020-07-19'
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+bibliography: bibliography.bib
+---
+
+<!-- ## Library Calls -->
+```{r, include=FALSE}
+library(rmarkdown)
+library(tinytex)
+library(boot)
+library(ggm)
+library(ggplot2)
+library(Hmisc)
+library(polycor)
+library(Rcmdr)
+library(readxl)
+library(QuantPsyc)
+library(foreign)
+library(caTools)
+library(class)
+```
+-----------------------------
+# Assignment 7.2
+
+
+```{r, echo=FALSE}
+# Read the file binary classifier csv
+setwd("D:/Blaine Documents/Bellevue/DSC520/dsc520/Weekly and Projects/data")
+binaryc_df <- read.csv("binary-classifier-data.csv", header = TRUE)
+
+```
+
+## Question 7.2a
+a. What is the accuracy of the logistic regression classifier?
+
+Answer - Using glm of the existing data set, I have a logistic regression classifier value of 58.3%
+
+```{r, echo=FALSE}
+# Split the data
+set.seed(1234)
+bin_split <- sample.split(binaryc_df, SplitRatio = 0.67)
+
+# Build train and test data
+bin_train <- subset(binaryc_df, bin_split = "TRUE")
+bin_test <- subset(binaryc_df, bin_split = "FALSE")
+
+#  Create logistic regression model and summary
+bin_model1 <- glm(label ~ x + y, data = bin_train, family = binomial())
+summary(bin_model1)
+
+# Run the train data in model
+bin_res1 <- predict(bin_model1, bin_train, type = "response")
+
+# Confusion Matrix
+conf_bin <- table(Actual_Value = bin_train$label, Predicted_Value = bin_res1 > 0.5)
+conf_bin
+
+# Accuracy
+(conf_bin[[1,1]] + conf_bin[[2,2]]) / sum(conf_bin) * 100
+
+
+```
+
+
+
+
+## Question 7.2b
+b. How does the accuracy of the logistic regression classifier compare to the nearest neighbors algorithm?
+
+Answer - The accuracy of my KNN model is 96.97 %, which compared to the logistic regression classifier (glm) was 58.34%. The KNN model appears to be more accurate (although it is probably introducing additional bias).
+
+
+```{r, echo=FALSE}
+
+# normalize functions
+bin_ran <- sample(1:nrow(binaryc_df), 0.67*nrow(binaryc_df))
+nor_ran <- function(x) {(x-min(x)/max(x)-min(x))}
+bin_normed <- as.data.frame(lapply(binaryc_df[,c(2,3)], nor_ran))
+
+# Create new test and train for KNN
+bin_df_train <- bin_normed[bin_ran,]
+bin_df_test <- bin_normed[-bin_ran,]
+bin_df_target <- binaryc_df[bin_ran,1]
+bin_df_target_test <- binaryc_df[-bin_ran,1]
+
+# Use k as the SQRT of the training rows (-1 to make odd)
+new_k <- round(sqrt(nrow(bin_df_train)))-1
+
+# Nearest neighbor 
+pred_bin <- knn(bin_df_train, bin_df_test, cl = bin_df_target, k = new_k)
+
+# Confusion Matrix
+bin_con <- table(pred_bin, bin_df_target_test)
+bin_con
+
+# Accuracy
+(bin_con[[1,1]] + bin_con[[2,2]]) / sum(bin_con) * 100
+```
+
+## Question 7.2c
+c. To compute the accuracy of your model, use the dataset to predict the outcome variable. The percent of correct predictions is the accuracy of your model. What is the accuracy of your model?
+
+
+Answer - KNN (K-nearest neighbor) and logistic regression use two different algorithms for classification. KNN looks at test data that is "near" other data and then basically takes a vote based on the value of k. KNN is useful when the data is closer in scale, as well as a smaller number of parameters or variables. When you increase the value of k, in the KNN classification, you are decreasing the variance and increasing bias. With a smaller value for k, you are increasing variance but decreasing bias. While you increase bias, you can negatively affect your accuracy. Logistic regression is parametric and supports mostly linear models and KNN is non-parametric and supports non-linear models.  Because of these factors, KNN and logistic regression will result in different accuracy of the same model.
+
+```
+
+
+# References
