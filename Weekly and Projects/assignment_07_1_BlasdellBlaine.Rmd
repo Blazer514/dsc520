@@ -3,8 +3,8 @@ title: "ASSIGNMENT 7.1"
 author: "Blaine Blasdell"
 date: '2020-07-19'
 output:
-  pdf_document: default
   word_document: default
+  pdf_document: default
   html_document: default
 bibliography: bibliography.bib
 ---
@@ -56,16 +56,58 @@ thor_df <- read.arff("ThoraricSurgery.ARFF")
 ## Question 7.1a
 a. Fit a binary logistic regression model to the data set that predicts whether or not the patient survived for one year (the Risk1Y variable) after the surgery. Use the glm() function to perform the logistic regression. See Generalized Linear Models for an example. Include a summary using the summary() function in your results.
 
-Answer - 
+Answer - See output.
 
 
 ```{r, echo=FALSE}
-# Read the file student-survey
+# GLM on original and multi model including summary
 thor_glm.1 <- glm(thor_df$Risk1Y ~ DGN, data = thor_df, family = binomial() )
 thor_glm.2 <- glm(thor_df$Risk1Y ~ DGN + PRE4 + PRE5 + PRE6 + PRE7 + PRE8 + PRE9 + PRE10 + PRE11 + PRE14 + PRE17 + PRE19 + PRE25 + PRE30 + PRE32 + AGE, data = thor_df, family = binomial() )
+# Test to see if I can remove low significance and raise my accuracy by removing predictors
+thor_glm.3 <- glm(thor_df$Risk1Y ~ PRE4 + PRE5 + PRE6 + PRE7  + PRE8 + PRE9 + PRE10 + PRE11 + PRE14 + PRE17 + PRE30, data = thor_df, family = binomial() )
 
 summary(thor_glm.1)
 summary(thor_glm.2)
+summary(thor_glm.3)
+```
+
+
+## Question 7.1b
+b. According to the summary, which variables had the greatest effect on the survival rate?
+
+Answer - PRE9 (Dyspnoea before surgery) with a value of True, PRE14 (size of the original tumor) with a diagnosis of OC14 (the largest), PRE17 (type 2 diabetes) with  a diagnosis of True, and PRE30 (Smoking) with a value of true.  
+
+
+## Question 7.1c
+c. To compute the accuracy of your model, use the dataset to predict the outcome variable. The percent of correct predictions is the accuracy of your model. What is the accuracy of your model?
+
+Answer - The accuracy of my initial model with all variables is 83.6 %. By playing with the model I took several less significant variables, and surprisingly including DGN and Age and I got my model to be 84.3% accurate.
+
+```{r, echo=FALSE}
+
+mod1_predict <- predict(thor_glm.1, thor_df, type = "response")
+mod2_predict <- predict(thor_glm.2, thor_df, type = "response")
+mod3_predict <- predict(thor_glm.3, thor_df, type = "response")
+
+#Confusion Matrix - Validate
+conf_max1 <- table(Actual_Value = thor_df$Risk1Yr, Predicted_Value = mod1_predict > 0.5)
+conf_max2 <- table(Actual_Value = thor_df$Risk1Yr, Predicted_Value = mod2_predict > 0.5)
+conf_max3 <- table(Actual_Value = thor_df$Risk1Yr, Predicted_Value = mod3_predict > 0.5)
+
+conf_max1
+conf_max2
+conf_max3
+
+# Accuracy
+# All Predictors
+(conf_max2[[1,1]] + conf_max2[[2,2]]) / sum(conf_max2)
+# Predictors removed
+(conf_max3[[1,1]] + conf_max3[[2,2]]) / sum(conf_max3)
+
+
+#
 
 ```
+
+
 # References
