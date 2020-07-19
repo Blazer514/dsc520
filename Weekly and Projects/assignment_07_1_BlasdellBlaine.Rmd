@@ -26,7 +26,7 @@ library(foreign)
 -----------------------------
 # Assignment 7.1
 
-Attribute Information:
+<!--Attribute Information:-->
 
 <!-- 1. DGN: Diagnosis - specific combination of ICD-10 codes for primary and secondary as well multiple tumours if any (DGN3,DGN2,DGN4,DGN6,DGN5,DGN8,DGN1) -->
 <!-- 2. PRE4: Forced vital capacity - FVC (numeric) -->
@@ -47,7 +47,7 @@ Attribute Information:
 <!-- 17. Risk1Y: 1 year survival period - (T)rue value if died (T,F) -->
 
 ```{r, echo=FALSE}
-# Read the file student-survey
+# Read the file ThoraricSurgery.ARFF using read.arff
 setwd("D:/Blaine Documents/Bellevue/DSC520/dsc520/Weekly and Projects/data")
 thor_df <- read.arff("ThoraricSurgery.ARFF")
 
