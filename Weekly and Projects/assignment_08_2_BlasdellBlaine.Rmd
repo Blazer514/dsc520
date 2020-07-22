@@ -1,0 +1,182 @@
+---
+title: "ASSIGNMENT 8.2"
+author: "Blaine Blasdell"
+date: '2020-07-26'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+bibliography: bibliography.bib
+---
+
+<!-- ## Library Calls -->
+```{r, include=FALSE}
+library(rmarkdown)
+library(tinytex)
+library(boot)
+library(ggm)
+library(ggplot2)
+library(Hmisc)
+library(polycor)
+library(Rcmdr)
+library(readxl)
+library(foreign)
+library(caTools)
+library(class)
+```
+-----------------------------
+# Assignment 8.2
+
+```{r, echo=FALSE}
+# Read the file binary classifier csv
+# setwd("D:/Bellevue/DSC520/dsc520/Blasdell/Weekly and Projects/data")
+binaryc_df <- read.csv("data/binary-classifier-data.csv", header = TRUE)
+trinaryc_df <- read.csv("data/trinary-classifier-data.csv", header = TRUE)
+
+```
+
+## Question 8.2a
+
+a. Plot the data from each dataset using a scatter plot.
+
+```{r, echo=FALSE}
+# Read the file binary classifier csv
+# setwd("D:/Bellevue/DSC520/dsc520/Blasdell/Weekly and Projects/data")
+binaryc_df$label <- as.factor(binaryc_df$label)
+trinaryc_df$label <- as.factor(trinaryc_df$label)
+
+#scatterplot
+ggplot(binaryc_df, aes(x=x, y=y, col=label)) + geom_point()
+ggplot(trinaryc_df, aes(x=x, y=y, col=label)) + geom_point()
+
+
+```
+
+## Question 8.2b
+
+b. Fit a k nearest neighbors model for each dataset for k=3, k=5, k=10, k=15, k=20, and k=25. Compute the accuracy of the resulting models for each value of k. Plot the results in a graph where the x-axis is the different values of k and the y-axis is the accuracy of the model.
+```{r, echo=FALSE, message=FALSE}
+
+# Set warnings to off
+defaultW <- getOption("warn") 
+options(warn = -1) 
+
+# Split the data
+set.seed(1234)
+bin_split <- sample.split(binaryc_df, SplitRatio = 0.67)
+
+# Build train and test data
+bin_train <- subset(binaryc_df, bin_split = "TRUE")
+bin_test <- subset(binaryc_df, bin_split = "FALSE")
+
+#  Create logistic regression model and summary
+bin_model1 <- glm(label ~ x + y, data = bin_train, family = binomial())
+summary(bin_model1)
+
+# normalize functions
+bin_ran <- sample(1:nrow(binaryc_df), 0.67*nrow(binaryc_df))
+nor_ran <- function(x) {(x-min(x)/max(x)-min(x))}
+bin_normed <- as.data.frame(lapply(binaryc_df[,c(2,3)], nor_ran))
+
+# Create new test and train for KNN
+bin_df_train <- bin_normed[bin_ran,]
+bin_df_test <- bin_normed[-bin_ran,]
+bin_df_target <- binaryc_df[bin_ran,1]
+bin_df_target_test <- binaryc_df[-bin_ran,1]
+
+# Use k as the SQRT of the training rows (-1 to make odd)
+new_k <- round(sqrt(nrow(bin_df_train)))-1
+
+# Nearest neighbor 
+accuracy_bin <- data.frame(x = 1:6, y = 1:6)
+
+
+# Initialize values for K
+new_list <- c(3, 5, 10, 15, 20, 25)
+
+# For loop to compute knn, prediction, confusion matrix. and accuracy
+for (i in 1:6) {
+  new_k <- new_list[i]
+  pred_bin <- knn(bin_df_train, bin_df_test, cl = bin_df_target, k = new_k)
+  bin_con <- table(pred_bin, bin_df_target_test)
+  accuracy_bin$y[i] <- c((bin_con[[1,1]] + bin_con[[2,2]]) / sum(bin_con) * 100)
+  accuracy_bin$x[i] <- new_k
+}
+
+# Display accuracy dataframe
+accuracy_bin
+
+# Output graph of k-value to dataframe
+ggplot(accuracy_bin, aes(x=x, y=y), colour = "steelblue") + geom_point() + geom_smooth() + ggtitle('Binary - k-value vs Accuracy (Using knn)') + xlab('k-value') + ylab('Accuracy') 
+
+# Turn on warnings
+options(warn = defaultW)
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+
+# Set warnings to off
+defaultW <- getOption("warn") 
+options(warn = -1) 
+
+# Split the data
+set.seed(1234)
+tri_split <- sample.split(trinaryc_df, SplitRatio = 0.67)
+
+# Build train and test data
+tri_train <- subset(trinaryc_df, tri_split = "TRUE")
+tri_test <- subset(trinaryc_df, tri_split = "FALSE")
+
+#  Create logistic regression model and summary
+tri_model1 <- glm(label ~ x + y, data = tri_train, family = binomial())
+summary(tri_model1)
+
+# normalize functions
+tri_ran <- sample(1:nrow(trinaryc_df), 0.67*nrow(trinaryc_df))
+nor3_ran <- function(x) {(x-min(x)/max(x)-min(x))}
+tri_normed <- as.data.frame(lapply(trinaryc_df[,c(2,3)], nor3_ran))
+
+# Create new test and train for KNN
+tri_df_train <- tri_normed[tri_ran,]
+tri_df_test <- tri_normed[-tri_ran,]
+tri_df_target <- trinaryc_df[tri_ran,1]
+tri_df_target_test <- trinaryc_df[-tri_ran,1]
+
+# Use k as the SQRT of the training rows (-1 to make odd)
+new_k <- round(sqrt(nrow(tri_df_train)))-1
+
+# Nearest neighbor 
+accuracy_tri <- data.frame(x = 1:6, y = 1:6)
+
+# Initialize K value List
+new_list <- c(3, 5, 10, 15, 20, 25)
+
+# For loop to compute knn, prediction, confusion matrix. and accuracy
+for (i in 1:6) {
+  new_k <- new_list[i]
+  pred_tri <- knn(tri_df_train, tri_df_test, cl = tri_df_target, k = new_k)
+  tri_con <- table(pred_tri, tri_df_target_test)
+  accuracy_tri$y[i] <- c((tri_con[[1,1]] + tri_con[[2,2]]) / sum(tri_con) * 100)
+  accuracy_tri$x[i] <- new_k
+}
+
+
+# Display accuracy dataframe
+accuracy_tri
+
+# Output graph of k-value to dataframe
+ggplot(accuracy_tri, aes(x=x, y=y), colour = "steelblue") + geom_point() + geom_smooth() + ggtitle('Trinary - k-value vs Accuracy (knn)') + xlab('k-value') + ylab('Accuracy') 
+
+# Turn on warnings
+options(warn = defaultW)
+```
+
+
+## Question 8.2c
+
+c. In later lessons, you will learn about linear classifiers. These algorithms work by defining a decision boundary that separates the different categories. Looking back at the plots of the data, do you think a linear classifier would work well on these datasets?
+
+Answer - Based on what I see (visual observation) a linear classifier would not work a the data points do not look to easily fit a straght line. Clustering seems like a better model, just looking at the visual.
+
+# References
